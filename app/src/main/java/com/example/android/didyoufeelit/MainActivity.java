@@ -35,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        /**
+         * Create an object of our AsyncTask class and then executes it on the background thread
+         * sending our request url as a parameter
+         */
         EventAsync eventAsync = new EventAsync();
         eventAsync.execute(USGS_REQUEST_URL);
     }
@@ -53,15 +57,32 @@ public class MainActivity extends AppCompatActivity {
         magnitudeTextView.setText(earthquake.perceivedStrength);
     }
 
+    /**
+     * Custom class that extends {@link AsyncTask} in order to call the networking request
+     * on the worker thread instead of the main thread
+     */
     private class EventAsync extends AsyncTask<String, Void, Event>{
 
+        /**
+         * Our class will process the Http request operation in this method.
+         * @param strings the method receives a string[] as parameter, which is typically our
+         *                string url
+         * @return the method will return our event object containing the data fetched from
+         * the http response
+         */
         @Override
         protected Event doInBackground(String... strings) {
             return Utils.fetchEarthquakeData(strings[0]);
         }
 
+        /**
+         * after the background worker finishes fetching the data from the internet, the event
+         * object will be captured by this method post execution of the worker thread
+         * @param event the event object received as a result of the doInBackground method
+         */
         @Override
         protected void onPostExecute(Event event) {
+            //Update the ui with our data
             updateUi(event);
         }
     }
